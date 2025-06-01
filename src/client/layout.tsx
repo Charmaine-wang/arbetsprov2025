@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Input from "./components/input";
+import Chip from "./components/chip";
+import CrossIcon from "./components/icons/cross";
 
 const activities = [
   { label: "paddling", value: "paddling" },
@@ -18,6 +21,9 @@ const Layout = () => {
       <p>
         Fyll i formuläret nedan för att anmäla dig till lägerverksamhet 2025.
       </p>
+      <Input type="text" name="name" label="Namn" />
+      <Input type="email" name="email" label="E-post" />{" "}
+      <Chip label="paddling" icon={<CrossIcon size={12} />} />
     </>
   );
 };
