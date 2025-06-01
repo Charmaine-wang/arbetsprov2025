@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Input from "./components/input";
 
 const activities = [
   { label: "paddling", value: "paddling" },
@@ -18,6 +19,8 @@ const Layout = () => {
       <p>
         Fyll i formuläret nedan för att anmäla dig till lägerverksamhet 2025.
       </p>
+      <Input type="text" name="name" label="Namn" />
+      <Input type="email" name="email" label="E-post" />{" "}
     </>
   );
 };
