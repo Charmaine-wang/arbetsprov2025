@@ -1,6 +1,16 @@
 import { ReactNode } from "react";
 import React from "react";
+import { styled } from "styled-components";
 
+const StyledChip = styled.div`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #cecece;
+  border-radius: 24px;
+  padding: 4px 16px;
+`;
 interface ChipProps {
   label: string;
   onClick?: () => void;
@@ -12,7 +22,7 @@ const Chip: React.FC<ChipProps> = ({ label, onClick, disabled, icon }) => {
   const isInteractive = !!onClick;
 
   return (
-    <div
+    <StyledChip
       role={onClick ? "button" : "status"}
       tabIndex={isInteractive && !disabled ? 0 : undefined}
       aria-disabled={disabled}
@@ -25,7 +35,7 @@ const Chip: React.FC<ChipProps> = ({ label, onClick, disabled, icon }) => {
       }}
     >
       <span>{label}</span>
-      {onClick && !disabled && (
+      {onClick && !disabled ? (
         <button
           onClick={(e) => {
             onClick();
@@ -34,8 +44,10 @@ const Chip: React.FC<ChipProps> = ({ label, onClick, disabled, icon }) => {
         >
           {icon}
         </button>
+      ) : (
+        <span>{icon}</span>
       )}
-    </div>
+    </StyledChip>
   );
 };
 

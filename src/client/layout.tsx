@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Chip from "./components/chip";
+import CrossIcon from "./components/icons/cross";
 
 const activities = [
   { label: "paddling", value: "paddling" },
@@ -18,6 +20,7 @@ const Layout = () => {
       <p>
         Fyll i formuläret nedan för att anmäla dig till lägerverksamhet 2025.
       </p>
+      <Chip label="paddling" icon={<CrossIcon size={12} />} />
     </>
   );
 };
