@@ -2,15 +2,13 @@ import styled from "styled-components";
 
 const InputWrapper = styled.div`
   position: relative;
-  margin: 24px 0;
   font-family: sans-serif;
 `;
 
 const StyledInput = styled.input`
   padding: 16px 12px 8px 12px;
   font-size: 16px;
-  border: 1px solid rgba(102, 102, 102, 1);
-  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 1);
   outline: none;
   background: none;
 
@@ -21,8 +19,8 @@ const StyledInput = styled.input`
   &:focus + label,
   &:not(:placeholder-shown) + label {
     top: -8px;
-    left: 10px;
-    font-size: 12px;
+    left: 8px;
+    font-size: 14px;
     background: white;
     padding: 0 4px;
   }
@@ -43,7 +41,7 @@ const FloatingLabel = styled.label`
   position: absolute;
   left: 12px;
   top: 16px;
-  color: rgba(102, 102, 102, 1);
+  color: rgba(0, 0, 0, 1);
   font-size: 14px;
   pointer-events: none;
   transition: all 0.2s ease;
