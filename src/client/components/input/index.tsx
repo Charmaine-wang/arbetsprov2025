@@ -55,6 +55,7 @@ const Input = ({
   label,
   className,
   required,
+  onChange,
   ...rest
 }: {
   type: "textarea" | "text" | "email" | "number";
@@ -62,6 +63,7 @@ const Input = ({
   label: string;
   className?: string;
   required?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   return type === "textarea" ? (
     <textarea className={className} required={required} {...rest} />
@@ -73,6 +75,7 @@ const Input = ({
         required={required}
         placeholder={label}
         {...rest}
+        onChange={onChange}
       />
       <FloatingLabel htmlFor={name}>{label}</FloatingLabel>
     </InputWrapper>
