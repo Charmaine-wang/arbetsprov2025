@@ -35,18 +35,7 @@ const Chip: React.FC<ChipProps> = ({ label, onClick, disabled, icon }) => {
       }}
     >
       <span>{label}</span>
-      {onClick && !disabled ? (
-        <button
-          onClick={(e) => {
-            onClick();
-          }}
-          aria-label={`button ${label}`}
-        >
-          {icon}
-        </button>
-      ) : (
-        <span>{icon}</span>
-      )}
+      {icon && <span>{icon}</span>}
     </StyledChip>
   );
 };
