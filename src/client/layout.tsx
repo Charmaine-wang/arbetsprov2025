@@ -5,6 +5,10 @@ const Card = styled.div`
   display: inline-flex;
   flex-direction: column;
   font-family: sans-serif;
+  width: 100%;
+  @media (min-width: 1024px) {
+    width: 50%;
+  }
 `;
 const Content = styled.div`
   padding: 16px;
