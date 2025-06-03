@@ -104,7 +104,7 @@ const Dropdown = ({
 
   const toggleDropdown = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => !prev);
     if (!isOpen) {
       setFocusedIndex(-1);
     }
@@ -160,7 +160,7 @@ const Dropdown = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isOpen]);
 
   useEffect(() => {
     if (focusedIndex >= 0 && optionRefs.current[focusedIndex]) {

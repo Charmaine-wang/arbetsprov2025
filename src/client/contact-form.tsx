@@ -16,9 +16,6 @@ const StyledForm = styled.form`
   display: inline-flex;
   flex-direction: column;
   gap: 16px;
-  padding: 32px 16px;
-  border: 1px solid #000;
-  border-top: none;
   h2 {
     margin: 0;
   }
@@ -85,16 +82,27 @@ const ContactForm = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setFormErrors({});
     setSubmitStatus(null);
-    setIsLoading(true);
 
+    const dataToSend = {
+      ...formData,
+      activities: selectedActivities.map((item) => item.value),
+    };
+
+    validateEmail(dataToSend.email);
+    validateName(dataToSend.name);
+    validateActivities(dataToSend.activities);
+
+    if (
+      formErrors.name ||
+      formErrors.email ||
+      selectedActivities.length !== 3
+    ) {
+      return;
+    }
     try {
-      const dataToSend = {
-        ...formData,
-        activities: selectedActivities.map((item) => item.value),
-      };
-
+      console.log("Sending data", dataToSend);
+      setIsLoading(true);
       const response = await fetch("http://localhost:3001/contact-form", {
         method: "POST",
         headers: {
@@ -116,24 +124,6 @@ const ContactForm = () => {
           setSelectedDropdownValue(null);
         }, 3000);
       } else {
-        const newErrors: { [key: string]: string } = {};
-
-        if (!formData.name || result.message.includes("name")) {
-          newErrors.name = "Fältet är obligatoriskt.";
-        }
-
-        if (!formData.email || result.message.includes("email")) {
-          newErrors.email = "Fältet är obligatoriskt.";
-        }
-
-        if (
-          selectedActivities.length !== 3 ||
-          result.message.includes("activities")
-        ) {
-          newErrors.activities = "Du måste välja tre aktiviteter.";
-        }
-
-        setFormErrors(newErrors);
         console.error("Server error:", result.message);
         setSubmitStatus("error");
       }
@@ -163,27 +153,44 @@ const ContactForm = () => {
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    if (emailRegex.test(email)) {
+      setFormErrors((prev) => ({
+        ...prev,
+        email: undefined,
+      }));
+    } else {
+      setFormErrors((prev) => ({
+        ...prev,
+        email: "Ange en giltig e-postadress.",
+      }));
+    }
   };
+
   const validateName = (name: string) => {
     const nameRegex = /^[\p{L}\s\-]+$/u;
-    return nameRegex.test(name);
+    if (nameRegex.test(name)) {
+      setFormErrors((prev) => ({
+        ...prev,
+        name: undefined,
+      }));
+    } else {
+      setFormErrors((prev) => ({
+        ...prev,
+        name: "Ange ett giltigt namn.",
+      }));
+    }
   };
-  const handleBlur = (name: string, value: string) => {
-    if (value) {
-      if (name === "email" && !validateEmail(value)) {
-        setFormErrors((prev) => ({
-          ...prev,
-          [name]: "Ange en giltig e-postadress.",
-        }));
-      } else if (name === "name" && !validateName(value)) {
-        setFormErrors((prev) => ({
-          ...prev,
-          [name]: "Ange ett giltigt namn.",
-        }));
-      } else {
-        setFormErrors((prev) => ({ ...prev, [name]: undefined }));
-      }
+  const validateActivities = (activities: string[]) => {
+    if (activities.length !== 3) {
+      setFormErrors((prev) => ({
+        ...prev,
+        activities: "Du måste välja tre aktiviteter.",
+      }));
+    } else {
+      setFormErrors((prev) => ({
+        ...prev,
+        activities: undefined,
+      }));
     }
   };
 
@@ -195,18 +202,20 @@ const ContactForm = () => {
         name="name"
         label="För- och efternamn*"
         onChange={(e) => handleChange("name", e)}
-        onBlur={(e) => handleBlur("name", e.target.value)}
+        onBlur={(e) => validateName(e.target.value)}
         error={formErrors.name}
         value={formData.name}
+        required
       />
       <Input
         type="email"
         name="email"
         label="E-post*"
         onChange={(e) => handleChange("email", e)}
-        onBlur={(e) => handleBlur("email", e.target.value)}
+        onBlur={(e) => validateEmail(e.target.value)}
         error={formErrors.email}
         value={formData.email}
+        required
       />
       <h2>Aktiviteter</h2>
       {selectedActivities.length > 0 && (
