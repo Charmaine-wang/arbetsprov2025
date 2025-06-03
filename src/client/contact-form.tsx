@@ -1,0 +1,282 @@
+import Dropdown from "./components/dropdown";
+import { useState } from "react";
+import Input from "./components/input";
+import Chip from "./components/chip";
+import CrossIcon from "./components/icons/cross";
+import styled from "styled-components";
+import { Button } from "./components/button";
+import { CheckCircleIcon } from "./components/icons/checkCircle";
+import { SendIcon } from "./components/icons/send";
+
+const StyledButton = styled(Button)`
+  width: 200px;
+`;
+const StyledForm = styled.form`
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px 16px;
+  border: 1px solid #000;
+  border-top: none;
+  h2 {
+    margin: 0;
+  }
+`;
+const ChipsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+const activities = [
+  { label: "Paddling", value: "paddling" },
+  { label: "Matlagning", value: "matlagning" },
+  { label: "Pyssla", value: "pyssla" },
+  { label: "Sport", value: "sport" },
+  { label: "Sjunga", value: "sjunga" },
+  { label: "Spela teater", value: "spela teater" },
+  { label: "Vandring", value: "vandring" },
+  { label: "Fiska", value: "fiska" },
+  { label: "Löpning", value: "löpning" },
+];
+const LoadingSpinner = styled.div`
+  width: 12px;
+  height: 12px;
+  border: 2px solid #ffffff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+  margin-left: 8px;
+
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+const ContactForm = () => {
+  const [selectedActivities, setSelectedActivities] = useState<
+    {
+      label: string;
+      value: string;
+    }[]
+  >([]);
+
+  const [formData, setFormData] = useState({ name: "", email: "" });
+  const [formErrors, setFormErrors] = useState<{
+    name?: string;
+    email?: string;
+    activities?: string;
+  }>({});
+  const [maxSelectedActivities, setMaxSelectedActivities] =
+    useState<Boolean>(false);
+  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedDropdownValue, setSelectedDropdownValue] = useState<{
+    label: string;
+    value: string;
+  } | null>(null);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setFormErrors({});
+    setSubmitStatus(null);
+    setIsLoading(true);
+
+    try {
+      const dataToSend = {
+        ...formData,
+        activities: selectedActivities.map((item) => item.value),
+      };
+
+      const response = await fetch("http://localhost:3001/contact-form", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus("success");
+
+        setTimeout(() => {
+          setSubmitStatus(null);
+          setFormData({ name: "", email: "" });
+          setSelectedActivities([]);
+          setMaxSelectedActivities(false);
+          setSelectedDropdownValue(null);
+        }, 3000);
+      } else {
+        const newErrors: { [key: string]: string } = {};
+
+        if (!formData.name || result.message.includes("name")) {
+          newErrors.name = "Fältet är obligatoriskt.";
+        }
+
+        if (!formData.email || result.message.includes("email")) {
+          newErrors.email = "Fältet är obligatoriskt.";
+        }
+
+        if (
+          selectedActivities.length !== 3 ||
+          result.message.includes("activities")
+        ) {
+          newErrors.activities = "Du måste välja tre aktiviteter.";
+        }
+
+        setFormErrors(newErrors);
+        console.error("Server error:", result.message);
+        setSubmitStatus("error");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitStatus("error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const toggleOption = (option: { label: string; value: string }) => {
+    if (selectedActivities.length < 3) {
+      setSelectedActivities((prev) => [...prev, option]);
+      setSelectedDropdownValue(option);
+    } else {
+      setMaxSelectedActivities(true);
+    }
+  };
+
+  const handleChange = (
+    name: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData({ ...formData, [name]: e.target.value });
+  };
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  const validateName = (name: string) => {
+    const nameRegex = /^[\p{L}\s\-]+$/u;
+    return nameRegex.test(name);
+  };
+  const handleBlur = (name: string, value: string) => {
+    if (value) {
+      if (name === "email" && !validateEmail(value)) {
+        setFormErrors((prev) => ({
+          ...prev,
+          [name]: "Ange en giltig e-postadress.",
+        }));
+      } else if (name === "name" && !validateName(value)) {
+        setFormErrors((prev) => ({
+          ...prev,
+          [name]: "Ange ett giltigt namn.",
+        }));
+      } else {
+        setFormErrors((prev) => ({ ...prev, [name]: undefined }));
+      }
+    }
+  };
+
+  return (
+    <StyledForm onSubmit={handleSubmit}>
+      <h2>Personuppgifter</h2>
+      <Input
+        type="text"
+        name="name"
+        label="För- och efternamn*"
+        onChange={(e) => handleChange("name", e)}
+        onBlur={(e) => handleBlur("name", e.target.value)}
+        error={formErrors.name}
+        value={formData.name}
+      />
+      <Input
+        type="email"
+        name="email"
+        label="E-post*"
+        onChange={(e) => handleChange("email", e)}
+        onBlur={(e) => handleBlur("email", e.target.value)}
+        error={formErrors.email}
+        value={formData.email}
+      />
+      <h2>Aktiviteter</h2>
+      {selectedActivities.length > 0 && (
+        <ChipsContainer>
+          {selectedActivities.map((activity) => {
+            return (
+              <Chip
+                key={activity.value}
+                label={activity.label}
+                onClick={() =>
+                  setSelectedActivities((prev) =>
+                    prev.filter((item) => item.value !== activity.value)
+                  )
+                }
+                icon={<CrossIcon size={12} />}
+              />
+            );
+          })}
+        </ChipsContainer>
+      )}
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <p style={{ fontSize: "12px", marginTop: "4px" }}>
+          Välj tre aktiviteter du är intresserad av
+        </p>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <Dropdown
+            options={activities}
+            disabledOptions={selectedActivities.map((item) => item.value)}
+            label="Aktiviteter"
+            onChange={toggleOption}
+            value={selectedDropdownValue}
+          />
+        </div>
+
+        {maxSelectedActivities ? (
+          <p style={{ color: "#FF4924", fontSize: "12px", marginTop: "4px" }}>
+            Du har redan valt tre aktiviteter
+          </p>
+        ) : formErrors.activities ? (
+          <p style={{ color: "#FF4924", fontSize: "12px", marginTop: "4px" }}>
+            {formErrors.activities}
+          </p>
+        ) : (
+          <span style={{ height: "14px", margin: "4px 0" }}></span>
+        )}
+      </div>
+      <div>
+        <StyledButton
+          type="submit"
+          disabled={isLoading || submitStatus === "success"}
+        >
+          {isLoading ? (
+            <>
+              Skickar
+              <LoadingSpinner />
+            </>
+          ) : submitStatus === "success" ? (
+            <>
+              Skickat
+              <CheckCircleIcon size={24} />
+            </>
+          ) : (
+            <>
+              Skicka anmälan <SendIcon size={24} />
+            </>
+          )}
+        </StyledButton>
+      </div>
+    </StyledForm>
+  );
+};
+
+export default ContactForm;

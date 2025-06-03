@@ -6,10 +6,11 @@ const StyledChip = styled.div`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 16px;
   border: 1px solid #cecece;
   border-radius: 24px;
-  padding: 4px 16px;
+  padding: 8px 16px;
+  font-size: 14px;
 `;
 interface ChipProps {
   label: string;
@@ -35,18 +36,7 @@ const Chip: React.FC<ChipProps> = ({ label, onClick, disabled, icon }) => {
       }}
     >
       <span>{label}</span>
-      {onClick && !disabled ? (
-        <button
-          onClick={(e) => {
-            onClick();
-          }}
-          aria-label={`button ${label}`}
-        >
-          {icon}
-        </button>
-      ) : (
-        <span>{icon}</span>
-      )}
+      {icon && <span>{icon}</span>}
     </StyledChip>
   );
 };

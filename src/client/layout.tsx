@@ -1,27 +1,36 @@
-import { useState } from "react";
-import Chip from "./components/chip";
-import CrossIcon from "./components/icons/cross";
+import styled from "styled-components";
+import ContactForm from "./contact-form";
 
-const activities = [
-  { label: "paddling", value: "paddling" },
-  { label: "matlagning", value: "matlagning" },
-  { label: "pyssla", value: "pyssla" },
-  { label: "sport", value: "sport" },
-  { label: "sjunga", value: "sjunga" },
-  { label: "spela teater", value: "spela teater" },
-  { label: "vandring", value: "vandring" },
-  { label: "fiska", value: "fiska" },
-  { label: "löpning", value: "löpning" },
-];
+const Card = styled.div`
+  display: inline-flex;
+  flex-direction: column;
+  font-family: sans-serif;
+  width: 100%;
+  @media (min-width: 1024px) {
+    width: 50%;
+  }
+`;
+const Content = styled.div`
+  padding: 16px;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: rgb(241, 194, 49);
+  border: 1px solid rgb(241, 194, 49);
+  box-sizing: border-box;
+`;
+
 const Layout = () => {
   return (
-    <>
-      <h1>Anmälan lägerverksamhet</h1>
-      <p>
-        Fyll i formuläret nedan för att anmäla dig till lägerverksamhet 2025.
-      </p>
-      <Chip label="paddling" icon={<CrossIcon size={12} />} />
-    </>
+    <Card>
+      <Content>
+        <h1>Anmälan lägerverksamhet</h1>
+        <p>
+          Fyll i formuläret nedan för att anmäla dig till lägerverksamhet 2025.
+        </p>
+      </Content>
+      <ContactForm />
+    </Card>
   );
 };
 
