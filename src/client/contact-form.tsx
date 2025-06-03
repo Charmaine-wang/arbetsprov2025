@@ -5,13 +5,11 @@ import Chip from "./components/chip";
 import CrossIcon from "./components/icons/cross";
 import styled from "styled-components";
 import { Button } from "./components/button";
-const Modal = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #fff;
+import { CheckCircleIcon } from "./components/icons/checkCircle";
+import { SendIcon } from "./components/icons/send";
+
+const StyledButton = styled(Button)`
+  width: 200px;
 `;
 const StyledForm = styled.form`
   position: relative;
@@ -41,6 +39,25 @@ const activities = [
   { label: "Fiska", value: "fiska" },
   { label: "Löpning", value: "löpning" },
 ];
+const LoadingSpinner = styled.div`
+  width: 12px;
+  height: 12px;
+  border: 2px solid #ffffff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+  margin-left: 8px;
+
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
 const ContactForm = () => {
   const [selectedActivities, setSelectedActivities] = useState<
     {
@@ -53,17 +70,24 @@ const ContactForm = () => {
   const [formErrors, setFormErrors] = useState<{
     name?: string;
     email?: string;
+    activities?: string;
   }>({});
   const [maxSelectedActivities, setMaxSelectedActivities] =
     useState<Boolean>(false);
   const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
     null
   );
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedDropdownValue, setSelectedDropdownValue] = useState<{
+    label: string;
+    value: string;
+  } | null>(null);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setFormErrors({});
     setSubmitStatus(null);
+    setIsLoading(true);
 
     try {
       const dataToSend = {
@@ -83,40 +107,48 @@ const ContactForm = () => {
 
       if (response.ok) {
         setSubmitStatus("success");
-        setFormData({ name: "", email: "" });
-        setSelectedActivities([]);
-        setMaxSelectedActivities(false);
+
+        setTimeout(() => {
+          setSubmitStatus(null);
+          setFormData({ name: "", email: "" });
+          setSelectedActivities([]);
+          setMaxSelectedActivities(false);
+          setSelectedDropdownValue(null);
+        }, 3000);
       } else {
-        if (result.message.includes("name")) {
-          setFormErrors((prev) => ({
-            ...prev,
-            name: "Fältet är obligatoriskt.",
-          }));
+        const newErrors: { [key: string]: string } = {};
+
+        if (!formData.name || result.message.includes("name")) {
+          newErrors.name = "Fältet är obligatoriskt.";
         }
-        if (result.message.includes("email")) {
-          setFormErrors((prev) => ({
-            ...prev,
-            email: "Fältet är obligatoriskt.",
-          }));
+
+        if (!formData.email || result.message.includes("email")) {
+          newErrors.email = "Fältet är obligatoriskt.";
         }
-        if (result.message.includes("activities")) {
-          setFormErrors((prev) => ({
-            ...prev,
-            activities: "Du måste välja tre aktiviteter.",
-          }));
+
+        if (
+          selectedActivities.length !== 3 ||
+          result.message.includes("activities")
+        ) {
+          newErrors.activities = "Du måste välja tre aktiviteter.";
         }
+
+        setFormErrors(newErrors);
         console.error("Server error:", result.message);
         setSubmitStatus("error");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
       setSubmitStatus("error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const toggleOption = (option: { label: string; value: string }) => {
     if (selectedActivities.length < 3) {
       setSelectedActivities((prev) => [...prev, option]);
+      setSelectedDropdownValue(option);
     } else {
       setMaxSelectedActivities(true);
     }
@@ -129,6 +161,32 @@ const ContactForm = () => {
     setFormData({ ...formData, [name]: e.target.value });
   };
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  const validateName = (name: string) => {
+    const nameRegex = /^[\p{L}\s\-]+$/u;
+    return nameRegex.test(name);
+  };
+  const handleBlur = (name: string, value: string) => {
+    if (value) {
+      if (name === "email" && !validateEmail(value)) {
+        setFormErrors((prev) => ({
+          ...prev,
+          [name]: "Ange en giltig e-postadress.",
+        }));
+      } else if (name === "name" && !validateName(value)) {
+        setFormErrors((prev) => ({
+          ...prev,
+          [name]: "Ange ett giltigt namn.",
+        }));
+      } else {
+        setFormErrors((prev) => ({ ...prev, [name]: undefined }));
+      }
+    }
+  };
+
   return (
     <StyledForm onSubmit={handleSubmit}>
       <h2>Personuppgifter</h2>
@@ -137,6 +195,7 @@ const ContactForm = () => {
         name="name"
         label="För- och efternamn*"
         onChange={(e) => handleChange("name", e)}
+        onBlur={(e) => handleBlur("name", e.target.value)}
         error={formErrors.name}
         value={formData.name}
       />
@@ -145,6 +204,7 @@ const ContactForm = () => {
         name="email"
         label="E-post*"
         onChange={(e) => handleChange("email", e)}
+        onBlur={(e) => handleBlur("email", e.target.value)}
         error={formErrors.email}
         value={formData.email}
       />
@@ -177,6 +237,7 @@ const ContactForm = () => {
             disabledOptions={selectedActivities.map((item) => item.value)}
             label="Aktiviteter"
             onChange={toggleOption}
+            value={selectedDropdownValue}
           />
         </div>
 
@@ -184,28 +245,36 @@ const ContactForm = () => {
           <p style={{ color: "#FF4924", fontSize: "12px", marginTop: "4px" }}>
             Du har redan valt tre aktiviteter
           </p>
+        ) : formErrors.activities ? (
+          <p style={{ color: "#FF4924", fontSize: "12px", marginTop: "4px" }}>
+            {formErrors.activities}
+          </p>
         ) : (
           <span style={{ height: "14px", margin: "4px 0" }}></span>
         )}
       </div>
       <div>
-        <Button type="submit">Skicka anmälan</Button>
-
-        {submitStatus === "error" ? (
-          <p style={{ color: "#FF4924", fontSize: "12px", marginTop: "4px" }}>
-            Något gick fel. Försök igen senare.
-          </p>
-        ) : (
-          <span style={{ height: "14px", margin: "4px 0" }}></span>
-        )}
+        <StyledButton
+          type="submit"
+          disabled={isLoading || submitStatus === "success"}
+        >
+          {isLoading ? (
+            <>
+              Skickar
+              <LoadingSpinner />
+            </>
+          ) : submitStatus === "success" ? (
+            <>
+              Skickat
+              <CheckCircleIcon size={24} />
+            </>
+          ) : (
+            <>
+              Skicka anmälan <SendIcon size={24} />
+            </>
+          )}
+        </StyledButton>
       </div>
-      {submitStatus === "success" && (
-        <Modal>
-          <p style={{ color: "green", fontSize: "12px" }}>
-            Tack! Din anmälan har skickats.
-          </p>
-        </Modal>
-      )}
     </StyledForm>
   );
 };

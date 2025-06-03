@@ -37,6 +37,10 @@ const StyledInput = styled.input`
   &::placeholder {
     opacity: 0;
   }
+
+  &:hover {
+    border-color: blue;
+  }
 `;
 
 const FloatingLabel = styled.label`
@@ -58,6 +62,7 @@ const Input = ({
   onChange,
   error,
   value,
+  onBlur,
   ...rest
 }: {
   type: "textarea" | "text" | "email" | "number";
@@ -68,6 +73,7 @@ const Input = ({
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
   value?: string;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }) => {
   return type === "textarea" ? (
     <textarea className={className} required={required} {...rest} />
@@ -81,6 +87,7 @@ const Input = ({
         {...rest}
         onChange={onChange}
         value={value}
+        onBlur={onBlur}
       />
       <FloatingLabel htmlFor={name}>{label}</FloatingLabel>
       {error ? (
