@@ -42,9 +42,9 @@ const StyledInput = styled.input`
 const FloatingLabel = styled.label`
   position: absolute;
   left: 12px;
-  top: 16px;
+  top: 14px;
   color: rgba(0, 0, 0, 1);
-  font-size: 14px;
+  font-size: 16px;
   pointer-events: none;
   transition: all 0.2s ease;
 `;
