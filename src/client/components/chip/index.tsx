@@ -12,6 +12,21 @@ const StyledChip = styled.div`
   padding: 8px 16px;
   font-size: 14px;
 `;
+
+const IconButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-radius: 50%;
+  &:hover {
+    background-color: #cecece;
+  }
+`;
 interface ChipProps {
   label: string;
   onClick?: () => void;
@@ -24,10 +39,9 @@ const Chip: React.FC<ChipProps> = ({ label, onClick, disabled, icon }) => {
 
   return (
     <StyledChip
-      role={onClick ? "button" : "status"}
+      role={"status"}
       tabIndex={isInteractive && !disabled ? 0 : undefined}
       aria-disabled={disabled}
-      onClick={disabled ? undefined : onClick}
       onKeyDown={(e) => {
         if (!disabled && (e.key === "Enter" || e.key === " ")) {
           e.preventDefault();
@@ -36,7 +50,11 @@ const Chip: React.FC<ChipProps> = ({ label, onClick, disabled, icon }) => {
       }}
     >
       <span>{label}</span>
-      {icon && <span>{icon}</span>}
+      {onClick && icon ? (
+        <IconButton onClick={disabled ? undefined : onClick}>{icon}</IconButton>
+      ) : icon ? (
+        icon
+      ) : null}
     </StyledChip>
   );
 };
