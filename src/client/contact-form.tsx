@@ -23,7 +23,7 @@ const StyledForm = styled.form`
     margin: 0;
   }
 `;
-const ChipsContainer = styled.div`
+const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -210,7 +210,7 @@ const ContactForm = () => {
       />
       <h2>Aktiviteter</h2>
       {selectedActivities.length > 0 && (
-        <ChipsContainer>
+        <Container>
           {selectedActivities.map((activity) => {
             return (
               <Chip
@@ -225,7 +225,7 @@ const ContactForm = () => {
               />
             );
           })}
-        </ChipsContainer>
+        </Container>
       )}
       <div style={{ display: "flex", flexDirection: "column" }}>
         <p style={{ fontSize: "12px", marginTop: "4px" }}>
