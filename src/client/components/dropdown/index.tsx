@@ -14,6 +14,7 @@ const SelectButton = styled.button`
   justify-content: space-between;
   width: 100%;
   padding: 8px 12px;
+  font-size: 16px;
   border: 1px solid #ccc;
   background: white;
   cursor: pointer;
@@ -44,6 +45,7 @@ const OptionItem = styled.li<{ disabled?: boolean }>`
       background-color: #f0f0f0;
     `}
   padding: 8px 12px;
+  font-size: 16px;
   cursor: pointer;
 
   &:hover {
