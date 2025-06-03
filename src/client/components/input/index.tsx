@@ -3,6 +3,8 @@ import styled from "styled-components";
 const InputWrapper = styled.div`
   position: relative;
   font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
 `;
 
 const StyledInput = styled.input`
@@ -54,6 +56,8 @@ const Input = ({
   className,
   required,
   onChange,
+  error,
+  value,
   ...rest
 }: {
   type: "textarea" | "text" | "email" | "number";
@@ -62,6 +66,8 @@ const Input = ({
   className?: string;
   required?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+  value?: string;
 }) => {
   return type === "textarea" ? (
     <textarea className={className} required={required} {...rest} />
@@ -74,8 +80,16 @@ const Input = ({
         placeholder={label}
         {...rest}
         onChange={onChange}
+        value={value}
       />
       <FloatingLabel htmlFor={name}>{label}</FloatingLabel>
+      {error ? (
+        <p style={{ color: "#FF4924", fontSize: "12px", margin: "4px 0" }}>
+          {error}
+        </p>
+      ) : (
+        <span style={{ height: "14px", margin: "4px 0" }}></span>
+      )}
     </InputWrapper>
   );
 };
