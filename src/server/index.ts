@@ -1,12 +1,5 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, "../..");
-const CLIENT_DIR = path.resolve(projectRoot, "src/client");
 
 const app = express();
 const PORT = 3001;
@@ -20,7 +13,6 @@ app.use(
 );
 
 app.use(express.json());
-app.use(express.static(CLIENT_DIR));
 
 app.post("/contact-form", (req, res) => {
   try {
@@ -58,10 +50,6 @@ app.post("/contact-form", (req, res) => {
     console.error("Server error:", error);
     res.status(500).json({ message: "Error processing form submission" });
   }
-});
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(CLIENT_DIR, "index.html"));
 });
 
 app.listen(PORT, () => {
