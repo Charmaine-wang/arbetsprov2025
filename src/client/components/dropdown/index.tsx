@@ -89,17 +89,15 @@ const Dropdown = ({
   label,
   disabledOptions,
   onChange,
+  value = null,
 }: {
   options: { label: string; value: string }[];
   label: string;
   disabledOptions?: string[];
   onChange: (option: { label: string; value: string }) => void;
+  value?: { label: string; value: string } | null;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<{
-    label: string;
-    value: string;
-  } | null>(null);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -113,9 +111,8 @@ const Dropdown = ({
   };
 
   const onSelectOption = (option: { label: string; value: string }) => {
-    setSelected(option);
-    setIsOpen(false);
     onChange(option);
+    setIsOpen(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -174,17 +171,17 @@ const Dropdown = ({
   return (
     <DropdownContainer ref={dropdownRef} onKeyDown={handleKeyDown}>
       <SelectButton onClick={toggleDropdown}>
-        {selected ? (
+        {value ? (
           <>
-            {selected.label}
+            {value.label}
             <ChevronDownIcon size={12} />
           </>
         ) : (
           ""
         )}
       </SelectButton>
-      <FloatingLabel isFloating={isOpen || !!selected}>
-        {label} {isOpen || (!selected && <ChevronDownIcon size={12} />)}
+      <FloatingLabel isFloating={isOpen || !!value}>
+        {label} {isOpen || (!value && <ChevronDownIcon size={12} />)}
       </FloatingLabel>
 
       {isOpen && (
