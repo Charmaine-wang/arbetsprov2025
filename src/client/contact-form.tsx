@@ -3,7 +3,7 @@ import { useState } from "react";
 import Input from "./components/input";
 import Chip from "./components/chip";
 import CrossIcon from "./components/icons/cross";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Button } from "./components/button";
 import { CheckCircleIcon } from "./components/icons/checkCircle";
 import { SendIcon } from "./components/icons/send";
@@ -15,15 +15,51 @@ const StyledForm = styled.form`
   position: relative;
   display: inline-flex;
   flex-direction: column;
-  gap: 16px;
+  gap: ${({ theme }) => theme.spacing.small};
   h2 {
     margin: 0;
   }
 `;
+
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: ${({ theme }) => theme.spacing.xsmall};
+`;
+
+const LoadingSpinner = styled.div`
+  width: 12px;
+  height: 12px;
+  border: 2px solid #ffffff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: rotation 1s linear infinite;
+  margin-left: ${({ theme }) => theme.spacing.xsmall};
+
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
+const SmallText = styled.p<{ $hasExtraSpacing?: boolean }>`
+  font-size: 12px;
+  margin: ${({ theme, $hasExtraSpacing }) =>
+    $hasExtraSpacing ? `0 0 ${theme.spacing.small} 0` : "4px 0"};
+`;
+const ErrorMessage = styled(SmallText)`
+  color: #ff4924;
+`;
+
+const Spacing = styled.span<{ size: "small" | "medium" | "large" }>`
+  margin: ${({ theme }) => theme.spacing.xxsmall} 0;
+  ${({ size }) => size === "small" && `height: 14px;`}
+  ${({ size }) => size === "medium" && `height: 24px;`}
+  ${({ size }) => size === "large" && `height: 32px;`}
 `;
 const activities = [
   { label: "Paddling", value: "paddling" },
@@ -36,25 +72,7 @@ const activities = [
   { label: "Fiska", value: "fiska" },
   { label: "Löpning", value: "löpning" },
 ];
-const LoadingSpinner = styled.div`
-  width: 12px;
-  height: 12px;
-  border: 2px solid #ffffff;
-  border-bottom-color: transparent;
-  border-radius: 50%;
-  display: inline-block;
-  animation: rotation 1s linear infinite;
-  margin-left: 8px;
 
-  @keyframes rotation {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-`;
 const ContactForm = () => {
   const [selectedActivities, setSelectedActivities] = useState<
     {
@@ -122,7 +140,7 @@ const ContactForm = () => {
           setSelectedActivities([]);
           setMaxSelectedActivities(false);
           setSelectedDropdownValue(null);
-        }, 3000);
+        }, 1500);
       } else {
         console.error("Server error:", result.message);
         setSubmitStatus("error");
@@ -237,29 +255,23 @@ const ContactForm = () => {
         </Container>
       )}
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <p style={{ fontSize: "12px", marginTop: "4px" }}>
+        <SmallText $hasExtraSpacing>
           Välj tre aktiviteter du är intresserad av
-        </p>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <Dropdown
-            options={activities}
-            disabledOptions={selectedActivities.map((item) => item.value)}
-            label="Aktiviteter"
-            onChange={toggleOption}
-            value={selectedDropdownValue}
-          />
-        </div>
+        </SmallText>
+        <Dropdown
+          options={activities}
+          disabledOptions={selectedActivities.map((item) => item.value)}
+          label="Aktiviteter"
+          onChange={toggleOption}
+          value={selectedDropdownValue}
+        />
 
         {maxSelectedActivities ? (
-          <p style={{ color: "#FF4924", fontSize: "12px", marginTop: "4px" }}>
-            Du har redan valt tre aktiviteter
-          </p>
+          <ErrorMessage>Du har redan valt tre aktiviteter</ErrorMessage>
         ) : formErrors.activities ? (
-          <p style={{ color: "#FF4924", fontSize: "12px", marginTop: "4px" }}>
-            {formErrors.activities}
-          </p>
+          <ErrorMessage>{formErrors.activities}</ErrorMessage>
         ) : (
-          <span style={{ height: "14px", margin: "4px 0" }}></span>
+          <Spacing size="small" />
         )}
       </div>
       <div>

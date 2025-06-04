@@ -8,22 +8,23 @@ const DropdownContainer = styled.div`
   font-family: Arial, sans-serif;
   position: relative;
 `;
-const FloatingLabel = styled.label<{ isFloating: boolean }>`
-  position: absolute;
-  color: rgba(0, 0, 0, 1);
-  font-size: 16px;
-  pointer-events: none;
-  transition: all 0.2s ease;
-  background: white;
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  ${({ isFloating }) =>
-    isFloating
+
+const FloatingLabel = styled.label<{ $isFloating: boolean }>`
+  ${({ theme, $isFloating }) => css`
+    position: absolute;
+    color: rgba(0, 0, 0, 1);
+    font-size: 16px;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: white;
+    padding: 0 ${theme.spacing.xxsmall};
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    ${$isFloating
       ? css`
-          top: -8px;
-          left: 8px;
+          top: -${theme.spacing.xsmall};
+          left: ${theme.spacing.xsmall};
           font-size: 14px;
         `
       : css`
@@ -31,57 +32,75 @@ const FloatingLabel = styled.label<{ isFloating: boolean }>`
           top: 14px;
           left: 12px;
         `}
+    &:focus {
+      background-color: red;
+    }
+  `}
 `;
-const SelectButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: 44.5px;
-  padding: 12px 16px;
-  font-size: 16px;
-  border: 1px solid #000;
-  background: white;
-  cursor: pointer;
-  text-align: left;
 
-  &:focus {
-    border-color: blue;
-  }
+const SelectButton = styled.button<{ $isFloating: boolean }>`
+  ${({ theme, $isFloating }) => css`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 44.5px;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #000;
+    background: white;
+    cursor: pointer;
+    text-align: left;
+
+    &:focus {
+      border-color: blue;
+      ${$isFloating &&
+      css`
+        ${FloatingLabel} {
+          color: blue;
+        }
+      `}
+    }
+  `}
 `;
 
 const OptionsList = styled.ul`
-  list-style: none;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  border: 1px solid #000;
-  max-height: 200px;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  overflow-y: auto;
-  background: white;
-  position: absolute;
-  width: 100%;
-  z-index: 1000;
+  ${({ theme }) => css`
+    list-style: none;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 1px solid ${theme.color.black};
+    max-height: 200px;
+    border-top: none;
+    border-radius: 0 0 ${theme.border.radius.xsmall}
+      ${theme.border.radius.xsmall};
+    overflow-y: auto;
+    background: white;
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+  `}
 `;
 
 const OptionItem = styled.li<{ disabled?: boolean }>`
-  ${({ disabled }) =>
-    disabled &&
+  ${({ theme, disabled }) =>
     css`
-      cursor: not-allowed;
-      background-color: #f0f0f0;
+      padding: ${theme.spacing.xsmall} 12px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      ${disabled &&
+      css`
+        cursor: not-allowed;
+        background-color: ${theme.color.whiteHover};
+      `}
+      &:hover {
+        background-color: ${theme.color.whiteHover};
+        color: ${theme.color.black};
+      }
     `}
-  padding: 8px 12px;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  &:hover {
-    background-color: #f0f0f0;
-    color: #000;
-  }
 `;
 
 const Dropdown = ({
@@ -170,7 +189,7 @@ const Dropdown = ({
 
   return (
     <DropdownContainer ref={dropdownRef} onKeyDown={handleKeyDown}>
-      <SelectButton onClick={toggleDropdown}>
+      <SelectButton onClick={toggleDropdown} $isFloating={isOpen || !!value}>
         {value ? (
           <>
             {value.label}
@@ -179,10 +198,10 @@ const Dropdown = ({
         ) : (
           ""
         )}
+        <FloatingLabel $isFloating={isOpen || !!value}>
+          {label} {isOpen || (!value && <ChevronDownIcon size={12} />)}
+        </FloatingLabel>
       </SelectButton>
-      <FloatingLabel isFloating={isOpen || !!value}>
-        {label} {isOpen || (!value && <ChevronDownIcon size={12} />)}
-      </FloatingLabel>
 
       {isOpen && (
         <OptionsList>

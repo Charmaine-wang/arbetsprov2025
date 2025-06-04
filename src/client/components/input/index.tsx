@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const InputWrapper = styled.div`
   position: relative;
@@ -8,39 +8,44 @@ const InputWrapper = styled.div`
 `;
 
 const StyledInput = styled.input`
-  padding: 16px 12px 8px 12px;
-  font-size: 16px;
-  border: 1px solid rgba(0, 0, 0, 1);
-  outline: none;
-  background: none;
+  ${({ theme }) => css`
+    padding: ${theme.spacing.small} 12px ${theme.spacing.xsmall} 12px;
+    font-size: 16px;
+    border: 1px solid ${theme.color.black};
+    outline: none;
+    background: none;
 
-  &:focus {
-    border-color: blue;
-  }
+    &:focus {
+      border-color: ${theme.color.button};
+    }
 
-  &:focus + label,
-  &:not(:placeholder-shown) + label {
-    top: -8px;
-    left: 8px;
-    font-size: 14px;
-    background: white;
-    padding: 0 4px;
-  }
+    &:focus + label,
+    &:not(:placeholder-shown) + label {
+      top: -8px;
+      left: 8px;
+      font-size: 14px;
+      background: ${theme.color.white};
+      padding: 0 ${theme.spacing.xxsmall};
+    }
 
-  &:focus + label {
-    color: blue;
-  }
-  &:not(:placeholder-shown) + label {
-    color: #000;
-  }
+    &:focus + label {
+      color: ${theme.color.button};
+    }
 
-  &::placeholder {
-    opacity: 0;
-  }
+    &::placeholder {
+      opacity: 0;
+    }
 
-  &:hover {
-    border-color: blue;
-  }
+    &:hover {
+      border-color: ${theme.color.button};
+    }
+  `}
+`;
+
+const ErrorMessage = styled.p`
+  color: #ff4924;
+  font-size: 12px;
+  margin: 4px 0;
 `;
 
 const FloatingLabel = styled.label`
@@ -91,9 +96,7 @@ const Input = ({
       />
       <FloatingLabel htmlFor={name}>{label}</FloatingLabel>
       {error ? (
-        <p style={{ color: "#FF4924", fontSize: "12px", margin: "4px 0" }}>
-          {error}
-        </p>
+        <ErrorMessage>{error}</ErrorMessage>
       ) : (
         <span style={{ height: "14px", margin: "4px 0" }}></span>
       )}

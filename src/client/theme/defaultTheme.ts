@@ -16,7 +16,7 @@ export const theme = {
     buttonContrast: "#fff",
     buttonHover: "navy",
     buttonHoverContrast: "#fff",
-    buttonDisabled: "#fff",
+    buttonDisabled: "#cecece",
     buttonDisabledContrast: "#000",
     disabled: "#929292",
     error: "#FF4924",

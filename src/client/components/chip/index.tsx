@@ -1,16 +1,18 @@
 import { ReactNode } from "react";
 import React from "react";
-import { styled } from "styled-components";
+import { styled, css } from "styled-components";
 
 const StyledChip = styled.div`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  border: 1px solid #cecece;
-  border-radius: 24px;
-  padding: 8px 16px;
-  font-size: 14px;
+  ${({ theme }) => css`
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: ${theme.spacing.small};
+    border: 1px solid ${theme.color.lightGray};
+    border-radius: ${theme.border.radius.xlarge};
+    padding: ${theme.spacing.xsmall} ${theme.spacing.small};
+    font-size: 14px;
+  `}
 `;
 
 const IconButton = styled.button`
