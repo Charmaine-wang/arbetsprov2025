@@ -47,7 +47,7 @@ const LoadingSpinner = styled.div`
   }
 `;
 const SmallText = styled.p<{ $hasExtraSpacing?: boolean }>`
-  font-size: 12px;
+  font-size: ${({ theme }) => theme.typography.caption.fontSize};
   margin: ${({ theme, $hasExtraSpacing }) =>
     $hasExtraSpacing ? `0 0 ${theme.spacing.small} 0` : "4px 0"};
 `;

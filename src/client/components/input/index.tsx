@@ -10,7 +10,7 @@ const InputWrapper = styled.div`
 const StyledInput = styled.input`
   ${({ theme }) => css`
     padding: ${theme.spacing.small} 12px ${theme.spacing.xsmall} 12px;
-    font-size: 16px;
+    font-size: ${theme.typography.body1.fontSize};
     border: 1px solid ${theme.color.black};
     outline: none;
     background: none;
@@ -44,7 +44,7 @@ const StyledInput = styled.input`
 
 const ErrorMessage = styled.p`
   color: #ff4924;
-  font-size: 12px;
+  font-size: ${({ theme }) => theme.typography.caption.fontSize};
   margin: 4px 0;
 `;
 
@@ -53,7 +53,7 @@ const FloatingLabel = styled.label`
   left: 12px;
   top: 14px;
   color: rgba(0, 0, 0, 1);
-  font-size: 16px;
+  font-size: ${({ theme }) => theme.typography.body1.fontSize};
   pointer-events: none;
   transition: all 0.2s ease;
 `;

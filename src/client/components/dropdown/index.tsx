@@ -13,7 +13,7 @@ const FloatingLabel = styled.label<{ $isFloating: boolean }>`
   ${({ theme, $isFloating }) => css`
     position: absolute;
     color: rgba(0, 0, 0, 1);
-    font-size: 16px;
+    font-size: ${theme.typography.body1.fontSize};
     pointer-events: none;
     transition: all 0.2s ease;
     background: white;
@@ -45,8 +45,8 @@ const SelectButton = styled.button<{ $isFloating: boolean }>`
     justify-content: space-between;
     width: 100%;
     height: 44.5px;
-    padding: 12px 16px;
-    font-size: 16px;
+    padding: 12px ${theme.spacing.small};
+    font-size: ${theme.typography.body1.fontSize};
     border: 1px solid #000;
     background: white;
     cursor: pointer;
@@ -87,7 +87,7 @@ const OptionItem = styled.li<{ disabled?: boolean }>`
   ${({ theme, disabled }) =>
     css`
       padding: ${theme.spacing.xsmall} 12px;
-      font-size: 16px;
+      font-size: ${theme.typography.body1.fontSize};
       cursor: pointer;
       display: flex;
       justify-content: space-between;
