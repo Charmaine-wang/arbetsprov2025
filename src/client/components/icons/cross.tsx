@@ -17,8 +17,8 @@ const CrossIcon = ({
       <path
         d="m4.5 19.5 15-15M4.5 4.5l15 15"
         stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
